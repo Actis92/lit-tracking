@@ -170,6 +170,7 @@ class Mot20ToCoco:
             cat_id = int(anns[i][Mot20Columns.class_name.value])
             bbox = anns[i][Mot20Columns.bbox_top.value:Mot20Columns.confidence_score.value].tolist()
             ann_cnt += 1
+            # check if we are on the same trajectory or if it's changed
             if not track_id == tid_last:
                 tid_curr += 1
                 tid_last = track_id
@@ -196,5 +197,3 @@ class Mot20ToCoco:
                            "id": label.value,
                            "name": label.name})
         return output
-
-
