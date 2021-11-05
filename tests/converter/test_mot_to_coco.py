@@ -1,7 +1,7 @@
 import json
 import os
 
-from lit_tracking.utils.mot_to_coco import Mot20ToCoco
+from lit_tracking.converter import Mot20ToCoco
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
