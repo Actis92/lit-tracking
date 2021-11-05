@@ -17,4 +17,3 @@ if __name__ == "__main__":
         name=name,
     )
     session = fo.launch_app()
-    print("ciao")
