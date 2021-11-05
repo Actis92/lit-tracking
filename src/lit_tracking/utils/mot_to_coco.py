@@ -1,3 +1,4 @@
+import argparse
 import configparser
 import json
 from enum import Enum
@@ -124,7 +125,7 @@ class Mot20ToCoco:
                         video_cnt += 1
                     print('loaded {} for {} images and {} samples'.format(split,
                                                                           len(out['images']), len(out['annotations'])))
-                json.dump(out, open(f"{self.output_path}/{split}/annotations.json", 'w'), indent=4)
+                json.dump(out, open(f"{self.output_path}/{split}/labels.json", 'w'), indent=4)
 
     @staticmethod
     def extract_image_info(config: Mot20Config, seq: str, video_cnt: int, image_cnt: int) -> List[Dict]:
@@ -173,7 +174,7 @@ class Mot20ToCoco:
             frame_id = int(anns[i][Mot20Columns.frame_number.value])
             track_id = int(anns[i][Mot20Columns.identity_number.value])
             cat_id = int(anns[i][Mot20Columns.class_name.value])
-            bbox = anns[i][Mot20Columns.bbox_top.value:Mot20Columns.confidence_score.value].tolist()
+            bbox = anns[i][Mot20Columns.bbox_left.value:Mot20Columns.confidence_score.value].tolist()
             ann_cnt += 1
             # check if we are on the same trajectory or if it's changed
             if not track_id == tid_last:
@@ -202,3 +203,12 @@ class Mot20ToCoco:
                            "id": label.value,
                            "name": label.name})
         return output
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input_path', help='Path that contains data in MOT format', required=True)
+    parser.add_argument('--output_path', help='Path that will contains the output', required=True)
+    args = parser.parse_args()
+    mot2coco = Mot20ToCoco(input_path=args.input_path, output_path=args.output_path)
+    mot2coco.convert()
