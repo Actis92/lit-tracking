@@ -3,7 +3,7 @@ import os
 
 from lit_tracking.converter import Mot20ToCoco
 
-TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+TEST_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def test(tmpdir):
