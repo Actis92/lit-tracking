@@ -91,37 +91,40 @@ class Mot20ToCoco:
         """
         # for each split create output directory if not exist
         for split in os.listdir(self.input_path):
-            Path(f"{self.output_path}/{split}").mkdir(parents=True, exist_ok=True)
-            image_cnt = 0
-            ann_cnt = 0
-            video_cnt = 1
-            tid_curr = 0
-            tid_last = -1
-            out = {'images': [], 'annotations': [], 'videos': [],
-                   'categories': []}
-            seqs = os.listdir(f"{self.input_path}/{split}")
-            out["categories"] = self.convert_labels_to_coco_categories()
-            for seq in sorted(seqs):
-                config_path = f"{self.input_path}/{split}/{seq}/{self.config_name}"
-                if exists(config_path):
-                    config = Mot20Config(config_path)
-                    out['videos'].append({'id': video_cnt, 'file_name': seq})
-                    out["images"] = self.extract_image_info(config=config,
-                                                            seq=seq, video_cnt=video_cnt,
-                                                            image_cnt=image_cnt)
-                    if split != 'test':
-                        # in this case the file gt.txt doesn't exist
-                        ann_path = f"{self.input_path}/{split}/{seq}/{self.gt_path}"
-                        out["annotations"], ann_cnt, tid_curr, tid_last = self.extract_annotations(ann_path=ann_path,
-                                                                                                   ann_cnt=ann_cnt,
-                                                                                                   tid_curr=tid_curr,
-                                                                                                   tid_last=tid_last,
-                                                                                                   image_cnt=image_cnt)
-                    image_cnt += config.seq_length
-                    video_cnt += 1
-                print('loaded {} for {} images and {} samples'.format(split,
-                                                                      len(out['images']), len(out['annotations'])))
-            json.dump(out, open(f"{self.output_path}/{split}/annotations.json", 'w'))
+            data_path = f"{self.input_path}/{split}"
+            if os.path.isdir(data_path):
+                Path(f"{self.output_path}/{split}").mkdir(parents=True, exist_ok=True)
+                image_cnt = 0
+                ann_cnt = 0
+                video_cnt = 1
+                tid_curr = 0
+                tid_last = -1
+                out = {'images': [], 'annotations': [], 'videos': [],
+                       'categories': []}
+                seqs = os.listdir(data_path)
+                out["categories"] = self.convert_labels_to_coco_categories()
+                for seq in sorted(seqs):
+                    config_path = f"{data_path}/{seq}/{self.config_name}"
+                    if exists(config_path):
+                        config = Mot20Config(config_path)
+                        out['videos'].append({'id': video_cnt, 'file_name': seq})
+                        out["images"] = self.extract_image_info(config=config,
+                                                                seq=seq, video_cnt=video_cnt,
+                                                                image_cnt=image_cnt)
+                        if split != 'test':
+                            # in this case the file gt.txt doesn't exist
+                            ann_path = f"{data_path}/{seq}/{self.gt_path}"
+                            out["annotations"], ann_cnt,\
+                                tid_curr, tid_last = self.extract_annotations(ann_path=ann_path,
+                                                                              ann_cnt=ann_cnt,
+                                                                              tid_curr=tid_curr,
+                                                                              tid_last=tid_last,
+                                                                              image_cnt=image_cnt)
+                        image_cnt += config.seq_length
+                        video_cnt += 1
+                    print('loaded {} for {} images and {} samples'.format(split,
+                                                                          len(out['images']), len(out['annotations'])))
+                json.dump(out, open(f"{self.output_path}/{split}/annotations.json", 'w'), indent=4)
 
     @staticmethod
     def extract_image_info(config: Mot20Config, seq: str, video_cnt: int, image_cnt: int) -> List[Dict]:
@@ -165,6 +168,9 @@ class Mot20ToCoco:
         out = []
         anns = np.loadtxt(ann_path, dtype=np.float32, delimiter=',')
         for i in range(anns.shape[0]):
+            if float(anns[i][Mot20Columns.confidence_score.value]) == 0:
+                # annotation to ignore
+                continue
             frame_id = int(anns[i][Mot20Columns.frame_number.value])
             track_id = int(anns[i][Mot20Columns.identity_number.value])
             cat_id = int(anns[i][Mot20Columns.class_name.value])
