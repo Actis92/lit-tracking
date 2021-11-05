@@ -139,8 +139,7 @@ class Mot20ToCoco:
         out = []
         for i in range(config.seq_length):
             image_cnt += 1
-            image_info = {'file_name': '{}/{}/{:06d}{}'.format(seq, config.image_dir, i + 1,
-                                                               config.image_extension),  # image name.
+            image_info = {'file_name': '{}-{:06d}{}'.format(seq, i + 1, config.image_extension),  # image name.
                           'id': image_cnt,  # image number in the entire training set.
                           'frame_id': i + 1,
                           # image number in the video sequence, starting from 1.

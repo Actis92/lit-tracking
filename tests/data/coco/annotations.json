@@ -1,7 +1,7 @@
 {
     "images": [
         {
-            "file_name": "MOT20-01/img1/000001.jpg",
+            "file_name": "MOT20-01-000001.jpg",
             "id": 1,
             "frame_id": 1,
             "prev_image_id": -1,
@@ -11,7 +11,7 @@
             "width": 1920
         },
         {
-            "file_name": "MOT20-01/img1/000002.jpg",
+            "file_name": "MOT20-01-000002.jpg",
             "id": 2,
             "frame_id": 2,
             "prev_image_id": 1,
