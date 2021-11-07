@@ -21,7 +21,8 @@ setup(
     keywords=['PYTORCH LIGHTNING'],
     install_requires=['pytorch-lightning>=1.3.8,<2',
                       'torch>=1.4',
-                      'hydra-core>=1.1.0'
+                      'hydra-core>=1.1.0',
+                      'fiftyone>=0.13'
                       ],
     classifiers=[
         'Development Status :: 3 - Alpha',
