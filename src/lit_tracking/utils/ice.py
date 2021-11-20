@@ -98,3 +98,4 @@ if __name__ == "__main__":
 
     preds = model_type.predict(light_model, train_ds, detection_threshold=0.01)
     result = from_icevision_predictions(preds)
+ 
