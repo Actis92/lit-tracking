@@ -23,7 +23,7 @@ setup(
                       'torch>=1.4',
                       'hydra-core>=1.1.0',
                       'fiftyone>=0.13',
-                      'icevision>=0.8',
+                      'icevision<0.9',
                       'lightning-flash[image]>=0.5.2'
                       ],
     classifiers=[
