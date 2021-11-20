@@ -5,7 +5,6 @@ from icevision import tfms, Dataset, models
 from icevision.parsers import COCOBBoxParser
 from icevision.core.mask import EncodedRLEs, MaskArray
 from icevision.core.record import BaseRecord
-from icevision.core.record_components import MasksRecordComponent
 from icevision.data.prediction import Prediction
 from torch.optim import SGD
 
