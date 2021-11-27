@@ -111,17 +111,11 @@ class Mot20ToCoco:
                     if exists(config_path):
                         config = Mot20Config(config_path)
                         out['videos'].append({'id': video_cnt, 'file_name': seq})
-                        if len(out['images']) == 0:
-                            out["images"] = self.extract_image_info(config=config,
-                                                                    seq=seq, video_cnt=video_cnt,
-                                                                    image_cnt=image_cnt)
-                        else:
-                            images = self.extract_image_info(config=config,
+                        images = self.extract_image_info(config=config,
                                                              seq=seq,
                                                              video_cnt=video_cnt,
                                                              image_cnt=image_cnt)
-                            for i in range(len(images)):
-                                out['images'].append(images[i])
+                        out["images"].extend(images)
 
                         if split != 'test':
                             # in this case the file gt.txt doesn't exist
@@ -132,11 +126,7 @@ class Mot20ToCoco:
                                                                               tid_curr=tid_curr,
                                                                               tid_last=tid_last,
                                                                               image_cnt=image_cnt)
-                            if len(out['annotations']) == 0:
-                                out["annotations"] = annotations
-                            else:
-                                for i in range(len(annotations)):
-                                    out['annotations'].append(annotations[i])
+                            out["annotations"].extend(annotations)
                         image_cnt += config.seq_length
                         video_cnt += 1
 
@@ -144,7 +134,7 @@ class Mot20ToCoco:
                 Path(dst_dir).mkdir(parents=True, exist_ok=True)
                 for name in [x['file_name'] for x in out['images']]:
                     old_name = name.split('-')[-1]
-                    old_file = os.path.join(data_path, '-'.join(name.split('-')[0:2]), self.img_folder_name, old_name)
+                    old_file = os.path.join(data_path, '-'.join(name.split('-')[:-1]), self.img_folder_name, old_name)
                     shutil.copy(old_file, os.path.join(dst_dir, name))
                 print('loaded {} for {} images in {} videos and {} samples'.format(
                     split, len(out['images']), len(out['videos']), len(out['annotations'])))
