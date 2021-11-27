@@ -1,6 +1,7 @@
 import argparse
 import configparser
 import json
+import shutil
 from enum import Enum
 from pathlib import Path
 import os
@@ -86,6 +87,7 @@ class Mot20ToCoco:
         self.config_name = "seqinfo.ini"
         self.det_path = "det/det.txt"
         self.gt_path = "gt/gt.txt"
+        self.img_folder_name = 'img1'
 
     def convert(self):
         """Create a coco annotation file from the mot20 files
@@ -109,22 +111,34 @@ class Mot20ToCoco:
                     if exists(config_path):
                         config = Mot20Config(config_path)
                         out['videos'].append({'id': video_cnt, 'file_name': seq})
-                        out["images"] = self.extract_image_info(config=config,
-                                                                seq=seq, video_cnt=video_cnt,
-                                                                image_cnt=image_cnt)
+                        images = self.extract_image_info(config=config,
+                                                         seq=seq,
+                                                         video_cnt=video_cnt,
+                                                         image_cnt=image_cnt)
+                        out["images"].extend(images)
+
                         if split != 'test':
                             # in this case the file gt.txt doesn't exist
                             ann_path = f"{data_path}/{seq}/{self.gt_path}"
-                            out["annotations"], ann_cnt,\
+                            annotations, ann_cnt,\
                                 tid_curr, tid_last = self.extract_annotations(ann_path=ann_path,
                                                                               ann_cnt=ann_cnt,
                                                                               tid_curr=tid_curr,
                                                                               tid_last=tid_last,
                                                                               image_cnt=image_cnt)
+                            out["annotations"].extend(annotations)
                         image_cnt += config.seq_length
                         video_cnt += 1
-                    print('loaded {} for {} images and {} samples'.format(split,
-                                                                          len(out['images']), len(out['annotations'])))
+
+                dst_dir = os.path.join(self.output_path, split, 'data')
+                Path(dst_dir).mkdir(parents=True, exist_ok=True)
+                for name in [x['file_name'] for x in out['images']]:
+                    old_name = name.split('-')[-1]
+                    old_file = os.path.join(data_path, '-'.join(name.split('-')[:-1]), self.img_folder_name, old_name)
+                    shutil.copy(old_file, os.path.join(dst_dir, name))
+                print('loaded {} for {} images in {} videos and {} samples'.format(
+                    split, len(out['images']), len(out['videos']), len(out['annotations'])))
+
                 json.dump(out, open(f"{self.output_path}/{split}/labels.json", 'w'), indent=4)
 
     @staticmethod
