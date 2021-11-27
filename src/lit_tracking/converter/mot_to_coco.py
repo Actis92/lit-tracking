@@ -112,9 +112,9 @@ class Mot20ToCoco:
                         config = Mot20Config(config_path)
                         out['videos'].append({'id': video_cnt, 'file_name': seq})
                         images = self.extract_image_info(config=config,
-                                                             seq=seq,
-                                                             video_cnt=video_cnt,
-                                                             image_cnt=image_cnt)
+                                                         seq=seq,
+                                                         video_cnt=video_cnt,
+                                                         image_cnt=image_cnt)
                         out["images"].extend(images)
 
                         if split != 'test':
