@@ -117,8 +117,9 @@ class Mot20ToCoco:
                                                                     image_cnt=image_cnt)
                         else:
                             images = self.extract_image_info(config=config,
-                                                                    seq=seq, video_cnt=video_cnt,
-                                                                    image_cnt=image_cnt)
+                                                             seq=seq,
+                                                             video_cnt=video_cnt,
+                                                             image_cnt=image_cnt)
                             for i in range(len(images)):
                                 out['images'].append(images[i])
 
@@ -131,13 +132,13 @@ class Mot20ToCoco:
                                                                               tid_curr=tid_curr,
                                                                               tid_last=tid_last,
                                                                               image_cnt=image_cnt)
+                            if len(out['annotations']) == 0:
+                                out["annotations"] = annotations
+                            else:
+                                for i in range(len(annotations)):
+                                    out['annotations'].append(annotations[i])
                         image_cnt += config.seq_length
                         video_cnt += 1
-                        if len(out['annotations']) == 0:
-                            out["annotations"] = annotations
-                        else:
-                            for i in range(len(annotations)):
-                                out['annotations'].append(annotations[i])
 
                 dst_dir = os.path.join(self.output_path, split, 'data')
                 Path(dst_dir).mkdir(parents=True, exist_ok=True)
