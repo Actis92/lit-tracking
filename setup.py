@@ -24,7 +24,7 @@ setup(
                       'hydra-core>=1.1.0',
                       'fiftyone>=0.13',
                       'icevision<0.9',
-                      'lightning-flash[image]>=0.5.2'
+                      'lightning-flash[image]>=0.6.0'
                       ],
     classifiers=[
         'Development Status :: 3 - Alpha',
