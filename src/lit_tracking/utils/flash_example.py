@@ -18,7 +18,6 @@ class ResizeTransform(InputTransform):
         )
 
 
-
 if __name__ == "__main__":
     datamodule = ObjectDetectionData.from_coco(
         train_folder="../../../tests/data/coco/train/data",
@@ -31,14 +30,15 @@ if __name__ == "__main__":
 
     # 2. Build the task
     model = ObjectDetector(head="efficientdet", backbone="d0", num_classes=datamodule.num_classes,
-                           image_size=1024)
+                           image_size=1024, predict_kwargs={"detection_threshold": 0.01})
 
     # 3. Create the trainer and finetune the model
     trainer = flash.Trainer(max_epochs=1)
     trainer.finetune(model, datamodule=datamodule, strategy="freeze")
-    predictions = model.predict(
-        [
+    datamodule = ObjectDetectionData.from_files(predict_files=[
             "../../../tests/data/coco/train/data/MOT20-01-000001.jpg",
-        ]
-    )
+        ],
+        batch_size=1,
+        predict_transform=ResizeTransform)
+    predictions = trainer.predict(model, datamodule=datamodule)
     print(predictions)
